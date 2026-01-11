@@ -15,10 +15,14 @@ public class PlayerCollision : MonoBehaviour
             gm.ChangeCoin(10);
             Destroy(collision.gameObject);
         }
-
-        if (collision.gameObject.CompareTag("Fence"))
+        else if (collision.gameObject.CompareTag("Fence"))
         {
             animator.SetTrigger("hit");
+        }
+        else if (collision.gameObject.CompareTag("Obstacle"))
+        {
+            gm.ChangeLife(-1);
+            Destroy(collision.gameObject);
         }
     }
 }
