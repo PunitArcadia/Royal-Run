@@ -3,47 +3,60 @@ using UnityEngine;
 
 public class Chunk : MonoBehaviour
 {
-    [SerializeField] float[] lanes = { -3, 0, 3 };
-    [SerializeField] GameObject fence;
-    [SerializeField] GameObject coin;
-
-    List<int> availableLanes = new List<int> { 0, 1, 2 };
+    [SerializeField] private float[] lanes = { -3, 0, 3 };
+    [SerializeField] private GameObject fence;
+    [SerializeField] private GameObject coin;
 
     private void Start()
     {
-        SpawnFence();
-        SpawnCoin();
+        SpawnContent();
     }
 
-    private void SpawnFence()
+    private void SpawnContent()
     {
-        //RNG Solution
-        //int RandomNum = Random.Range(0, 3);
-        //for(int i=0; i < RandomNum; i++)
-        //{
-        //    Vector3 pos = new Vector3(lanes[Random.Range(0, lanes.Length)], transform.position.y, transform.position.z);
-        //    Instantiate(fence, pos, Quaternion.identity, this.transform);
-        //}
+        List<int> availableLanes = new List<int> { 0, 1, 2 };
 
+        SpawnFences(availableLanes);
+        SpawnCoin(availableLanes);
+    }
+
+    private void SpawnFences(List<int> availableLanes)
+    {
         int fencesToSpawn = Random.Range(0, lanes.Length);
 
-        for (int i = 0; i < fencesToSpawn; i++) 
-        { 
-            if(availableLanes.Count <= 0) break;
+        for (int i = 0; i < fencesToSpawn; i++)
+        {
+            if (availableLanes.Count <= 0)
+                break;
 
-            int randomLaneIndex = Random.Range(0, availableLanes.Count);
-            int selectedLane = availableLanes[randomLaneIndex];
-            availableLanes.RemoveAt(randomLaneIndex);
+            int randomIndex = Random.Range(0, availableLanes.Count);
+            int selectedLane = availableLanes[randomIndex];
 
-            Vector3 spawnPosition = new Vector3(lanes[selectedLane], transform.position.y, transform.position.z);
+            availableLanes.RemoveAt(randomIndex);
+
+            Vector3 spawnPosition = new Vector3(
+                lanes[selectedLane],
+                transform.position.y,
+                transform.position.z
+            );
+
             Instantiate(fence, spawnPosition, Quaternion.identity, transform);
         }
     }
 
-    private void SpawnCoin()
+    private void SpawnCoin(List<int> availableLanes)
     {
-        int availableLane = availableLanes[0];
-        Vector3 spawnPosition = new Vector3(lanes[availableLane], transform.position.y + 0.7f, transform.position.z);
+        if (availableLanes.Count <= 0)
+            return;
+
+        int laneIndex = availableLanes[0];
+
+        Vector3 spawnPosition = new Vector3(
+            lanes[laneIndex],
+            transform.position.y + 0.7f,
+            transform.position.z
+        );
+
         Instantiate(coin, spawnPosition, Quaternion.identity, transform);
     }
 }

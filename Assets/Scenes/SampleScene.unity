@@ -1040,7 +1040,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelGenerator
   chunkPrefab: {fileID: 38641571680762578, guid: 7c6a4e0c049cd034f9127481a28ba14b, type: 3}
-  chunkParent: {fileID: 746730052}
+  chunkParent: {fileID: 746730053}
   initialChunkAmount: 10
   chunkLength: 10
   moveSpeed: 10
@@ -1173,16 +1173,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cc35f9ce4cb7ae40a7571e2c02e781a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObstacleSpawner
-  Obstacles:
-  - {fileID: 2017103482921642857, guid: ddfafedf841caf142a26acbb255ddc8b, type: 3}
+  obstacles:
   - {fileID: 1200285892659120058, guid: 12698b8de933c5d48b18b05a57ab5bf5, type: 3}
-  - {fileID: 5520736504020516778, guid: 534ff1a54481c5944822d17954287ebf, type: 3}
   - {fileID: 7573844751058196461, guid: 4c7461b5f4e1dfd42b71be6e4591a59a, type: 3}
+  - {fileID: 2017103482921642857, guid: ddfafedf841caf142a26acbb255ddc8b, type: 3}
   - {fileID: 523265707612916246, guid: 5cd41994fafb4e340a78be81248cd561, type: 3}
-  numToSpawn: 10000
-  waitPerSpawn: 2
+  - {fileID: 5520736504020516778, guid: 534ff1a54481c5944822d17954287ebf, type: 3}
+  spawnInterval: 1
   spawnWidth: 3
-  ObstacleParent: {fileID: 298476423}
+  obstacleParent: {fileID: 298476424}
 --- !u!4 &1341412283
 Transform:
   m_ObjectHideFlags: 0
@@ -1403,8 +1402,7 @@ MonoBehaviour:
   scoreUI: {fileID: 539027852}
   coinUI: {fileID: 2072557850}
   lifeUI: {fileID: 1377779661}
-  red: {fileID: 1310085559}
-  GameOverUI: {fileID: 1512527015}
+  gameOverUI: {fileID: 1512527015}
   scoreFactor: 10
 --- !u!4 &1518998313
 Transform:

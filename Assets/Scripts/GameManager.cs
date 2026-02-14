@@ -4,27 +4,35 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] TMP_Text scoreUI;
-    [SerializeField] TMP_Text coinUI;
-    [SerializeField] TMP_Text lifeUI;
-    [SerializeField] Image red;
-    [SerializeField] GameObject GameOverUI;
+    public enum GameState
+    {
+        Playing,
+        GameOver
+    }
 
-    [SerializeField] float scoreFactor;
+    [Header("UI References")]
+    [SerializeField] private TMP_Text scoreUI;
+    [SerializeField] private TMP_Text coinUI;
+    [SerializeField] private TMP_Text lifeUI;
+    [SerializeField] private GameObject gameOverUI;
 
-    float score = 0;
-    int coin = 0;
-    int life = 3;
+    [Header("Score Settings")]
+    [SerializeField] private float scoreFactor = 10f;
+
+    private GameState currentState = GameState.Playing;
+
+    private float score = 0;
+    private int coin = 0;
+    private int life = 3;
+
+    public bool IsGameActive => currentState == GameState.Playing;
 
     private void Update()
     {
-        score = Time.time * scoreFactor;
-        scoreUI.text = ((int)score).ToString();
+        if (!IsGameActive) return;
 
-        if (life <= 0)
-        {
-            GameOverUI.SetActive(true);
-        }
+        score += Time.deltaTime * scoreFactor;
+        scoreUI.text = ((int)score).ToString();
     }
 
     public void ChangeCoin(int amount)
@@ -37,5 +45,18 @@ public class GameManager : MonoBehaviour
     {
         life += amount;
         lifeUI.text = life.ToString();
+
+        if (life <= 0)
+        {
+            TriggerGameOver();
+        }
+    }
+
+    private void TriggerGameOver()
+    {
+        if (currentState == GameState.GameOver) return;
+
+        currentState = GameState.GameOver;
+        gameOverUI.SetActive(true);
     }
 }
