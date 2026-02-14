@@ -3,30 +3,48 @@ using UnityEngine;
 
 public class ObstacleSpawner : MonoBehaviour
 {
-    [SerializeField] GameObject[] Obstacles;
-    [SerializeField] int numToSpawn = 10;
-    [SerializeField] int waitPerSpawn = 1;
-    [SerializeField] float spawnWidth = 3f;
-    [SerializeField] GameObject ObstacleParent;
+    [SerializeField] private GameObject[] obstacles;
+    [SerializeField] private float spawnInterval = 1f;
+    [SerializeField] private float spawnWidth = 3f;
+    [SerializeField] private Transform obstacleParent;
+
+    private GameManager gameManager;
+
+    private void Awake()
+    {
+        gameManager = FindFirstObjectByType<GameManager>();
+    }
 
     private void Start()
     {
-        //for (int i = 0; i < numToSpawn; i++)
-        //{
-        //    Instantiate(Obstacle, transform.position, Quaternion.identity);
-        //}
-        StartCoroutine(SpawnObstacles());
+        StartCoroutine(SpawnLoop());
     }
 
-    IEnumerator SpawnObstacles()
+    private IEnumerator SpawnLoop()
     {
-        while (numToSpawn > 0)
+        while (true)
         {
-            yield return new WaitForSeconds(waitPerSpawn);
-            GameObject Obstacle = Obstacles[Random.Range(0, Obstacles.Length)];
-            Vector3 spawnPosition = new Vector3(Random.Range(-spawnWidth, +spawnWidth), transform.position.y, transform.position.z);
-            Instantiate(Obstacle, spawnPosition, Random.rotation, ObstacleParent.transform);
-            numToSpawn--;
+            if (gameManager != null && !gameManager.IsGameActive)
+                yield break;
+
+            SpawnObstacle();
+
+            yield return new WaitForSeconds(spawnInterval);
         }
+    }
+
+    private void SpawnObstacle()
+    {
+        if (obstacles.Length == 0) return;
+
+        GameObject obstacle = obstacles[Random.Range(0, obstacles.Length)];
+
+        Vector3 spawnPosition = new Vector3(
+            Random.Range(-spawnWidth, spawnWidth),
+            transform.position.y,
+            transform.position.z
+        );
+
+        Instantiate(obstacle, spawnPosition, Quaternion.identity, obstacleParent);
     }
 }

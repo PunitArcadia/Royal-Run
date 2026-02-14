@@ -3,55 +3,100 @@ using UnityEngine;
 
 public class LevelGenerator : MonoBehaviour
 {
-    [SerializeField] GameObject chunkPrefab;
-    [SerializeField] GameObject chunkParent;
-    [SerializeField] int initialChunkAmount = 10;
-    [SerializeField] int chunkLength = 10;
-    [SerializeField] float moveSpeed = 10;
+    [SerializeField] private GameObject chunkPrefab;
+    [SerializeField] private Transform chunkParent;
+    [SerializeField] private int initialChunkAmount = 10;
+    [SerializeField] private int chunkLength = 10;
+    [SerializeField] private float moveSpeed = 10f;
 
-    List<GameObject> chunks = new List<GameObject>();
-    //GameObject[] chunks = new GameObject[10];
+    private List<GameObject> chunks = new List<GameObject>();
+
+    private Camera mainCamera;
+    private GameManager gameManager;
+
+    private void Awake()
+    {
+        mainCamera = Camera.main;
+        gameManager = FindFirstObjectByType<GameManager>();
+    }
 
     private void Start()
     {
-        SpawnChunk();
-    }
-    private void Update()
-    {
-        MoveChunk();
+        SpawnInitialChunks();
     }
 
-    private void SpawnChunk()
+    private void Update()
+    {
+        if (gameManager != null && !gameManager.IsGameActive)
+            return;
+
+        MoveChunks();
+    }
+
+    private void SpawnInitialChunks()
     {
         for (int i = 0; i < initialChunkAmount; i++)
         {
-            float chunkZ;
-            chunkZ = (i * chunkLength) + transform.position.z;
-            Vector3 chunkPos = new Vector3(transform.position.x, transform.position.y, chunkZ);
-            GameObject newChunk = Instantiate(chunkPrefab, chunkPos, Quaternion.identity, chunkParent.transform);
-            chunks.Add(newChunk);
+            SpawnChunkAtIndex(i);
         }
+    }
+
+    private void SpawnChunkAtIndex(int index)
+    {
+        float chunkZ = (index * chunkLength) + transform.position.z;
+
+        Vector3 chunkPos = new Vector3(
+            transform.position.x,
+            transform.position.y,
+            chunkZ
+        );
+
+        GameObject newChunk = Instantiate(
+            chunkPrefab,
+            chunkPos,
+            Quaternion.identity,
+            chunkParent
+        );
+
+        chunks.Add(newChunk);
     }
 
     private void SpawnNewChunk()
     {
-        float chunkZ;
-        chunkZ = chunks[chunks.Count - 1].transform.position.z + chunkLength;
-        Vector3 chunkPos = new Vector3(transform.position.x, transform.position.y, chunkZ);
-        GameObject newChunk = Instantiate(chunkPrefab, chunkPos, Quaternion.identity, chunkParent.transform);
+        float chunkZ = chunks[chunks.Count - 1].transform.position.z + chunkLength;
+
+        Vector3 chunkPos = new Vector3(
+            transform.position.x,
+            transform.position.y,
+            chunkZ
+        );
+
+        GameObject newChunk = Instantiate(
+            chunkPrefab,
+            chunkPos,
+            Quaternion.identity,
+            chunkParent
+        );
+
         chunks.Add(newChunk);
     }
 
-    private void MoveChunk()
+    private void MoveChunks()
     {
-        for (int i = 0; i < chunks.Count; i++)
+        float destroyZ = mainCamera.transform.position.z - chunkLength;
+
+        for (int i = chunks.Count - 1; i >= 0; i--)
         {
             GameObject chunk = chunks[i];
-            chunk.transform.Translate(-transform.forward * moveSpeed * Time.deltaTime);
-            if (chunk.transform.position.z <= Camera.main.transform.position.z - chunkLength)
+
+            chunk.transform.Translate(
+                -transform.forward * moveSpeed * Time.deltaTime
+            );
+
+            if (chunk.transform.position.z <= destroyZ)
             {
-                chunks.Remove(chunk);
                 Destroy(chunk);
+                chunks.RemoveAt(i);
                 SpawnNewChunk();
             }
         }
